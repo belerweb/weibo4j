@@ -23,7 +23,8 @@ public class AccessToken extends WeiboResponse implements Serializable {
     try {
       accessToken = json.getString("access_token");
       expireIn = json.getString("expires_in");
-      refreshToken = json.getString("refresh_token");
+      // Fix issue #1, see https://github.com/belerweb/weibo4j/issues/1
+      // refreshToken = json.getString("refresh_token");
       uid = json.getString("uid");
     } catch (JSONException je) {
       throw new WeiboException(je.getMessage() + ":" + json.toString(), je);
