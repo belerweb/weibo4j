@@ -44,6 +44,11 @@ public class AccessToken extends WeiboResponse implements Serializable {
     return accessToken;
   }
 
+  // Fix issue #2, see https://github.com/belerweb/weibo4j/issues/2
+  public String getUid() {
+    return uid;
+  }
+
   public String getExpireIn() {
     return expireIn;
   }
