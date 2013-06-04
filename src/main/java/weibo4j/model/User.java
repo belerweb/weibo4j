@@ -38,36 +38,36 @@ import weibo4j.http.Response;
 public class User extends WeiboResponse implements java.io.Serializable {
 
   private static final long serialVersionUID = -332738032648843482L;
-  private String id; //用户UID
-  private String screenName; //微博昵称
-  private String name; //友好显示名称，如Bill Gates,名称中间的空格正常显示(此特性暂不支持)
-  private int province; //省份编码（参考省份编码表）
-  private int city; //城市编码（参考城市编码表）
-  private String location; //地址
-  private String description; //个人描述
-  private String url; //用户博客地址
-  private String profileImageUrl; //自定义图像
-  private String userDomain; //用户个性化URL
-  private String gender; //性别,m--男，f--女,n--未知
-  private int followersCount; //粉丝数
-  private int friendsCount; //关注数
-  private int statusesCount; //微博数
-  private int favouritesCount; //收藏数
-  private Date createdAt; //创建时间
-  private boolean following; //保留字段,是否已关注(此特性暂不支持)
-  private boolean verified; //加V标示，是否微博认证用户
-  private int verifiedType; //认证类型
-  private boolean allowAllActMsg; //是否允许所有人给我发私信
-  private boolean allowAllComment; //是否允许所有人对我的微博进行评论
-  private boolean followMe; //此用户是否关注我
-  private String avatarLarge; //大头像地址
-  private int onlineStatus; //用户在线状态
-  private Status status = null; //用户最新一条微博
-  private int biFollowersCount; //互粉数
-  private String remark; //备注信息，在查询用户关系时提供此字段。
-  private String lang; //用户语言版本
-  private String verifiedReason; //认证原因
-  private String weihao; //微號
+  private String id; // 用户UID
+  private String screenName; // 微博昵称
+  private String name; // 友好显示名称，如Bill Gates,名称中间的空格正常显示(此特性暂不支持)
+  private int province; // 省份编码（参考省份编码表）
+  private int city; // 城市编码（参考城市编码表）
+  private String location; // 地址
+  private String description; // 个人描述
+  private String url; // 用户博客地址
+  private String profileImageUrl; // 自定义图像
+  private String userDomain; // 用户个性化URL
+  private String gender; // 性别,m--男，f--女,n--未知
+  private int followersCount; // 粉丝数
+  private int friendsCount; // 关注数
+  private int statusesCount; // 微博数
+  private int favouritesCount; // 收藏数
+  private Date createdAt; // 创建时间
+  private boolean following; // 保留字段,是否已关注(此特性暂不支持)
+  private boolean verified; // 加V标示，是否微博认证用户
+  private int verifiedType; // 认证类型
+  private boolean allowAllActMsg; // 是否允许所有人给我发私信
+  private boolean allowAllComment; // 是否允许所有人对我的微博进行评论
+  private boolean followMe; // 此用户是否关注我
+  private String avatarLarge; // 大头像地址
+  private int onlineStatus; // 用户在线状态
+  private Status status = null; // 用户最新一条微博
+  private int biFollowersCount; // 互粉数
+  private String remark; // 备注信息，在查询用户关系时提供此字段。
+  private String lang; // 用户语言版本
+  private String verifiedReason; // 认证原因
+  private String weihao; // 微號
   private String statusId;
 
   public String getVerified_reason() {
@@ -250,7 +250,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
     return biFollowersCount;
   }
 
-  /*package*/public User(JSONObject json) throws WeiboException {
+  /* package */public User(JSONObject json) throws WeiboException {
     super();
     init(json);
   }
@@ -283,7 +283,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
         followMe = json.getBoolean("follow_me");
         avatarLarge = json.getString("avatar_large");
         onlineStatus = json.getInt("online_status");
-        statusId = json.getString("status_id");
+        // statusId = json.getString("status_id");
         biFollowersCount = json.getInt("bi_followers_count");
         if (!json.getString("remark").isEmpty()) {
           remark = json.getString("remark");
@@ -317,7 +317,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
    * @throws WeiboException
    */
   public static UserWapper constructWapperUsers(Response res) throws WeiboException {
-    JSONObject jsonUsers = res.asJSONObject(); //asJSONArray();
+    JSONObject jsonUsers = res.asJSONObject(); // asJSONArray();
     try {
       JSONArray user = jsonUsers.getJSONArray("users");
       int size = user.length();
@@ -336,8 +336,8 @@ public class User extends WeiboResponse implements java.io.Serializable {
   }
 
   /**
-   * @param res 
-   * @return 
+   * @param res
+   * @return
    * @throws WeiboException
    */
   static List<User> constructResult(Response res) throws WeiboException {
