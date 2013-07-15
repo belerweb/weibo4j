@@ -14,34 +14,31 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
   private static final long serialVersionUID = -8795691786466526420L;
 
-  private User user = null; // 作者信息
-  private Date createdAt; // status创建时间
-  private String id; // status id
+  private JSONObject json;
+  private Date createdAt; // 微博创建时间
+  private Long id; // 微博ID
   private String mid; // 微博MID
-  private long idstr; // 保留字段，请勿使用
+  private String idstr; // 字符串型的微博ID
   private String text; // 微博内容
-  private Source source; // 微博来源
-  private boolean favorited; // 是否已收藏
-  private boolean truncated;
-  private long inReplyToStatusId; // 回复ID
-  private long inReplyToUserId; // 回复人ID
+  private String source; // 微博来源
+  private boolean favorited; // 是否已收藏，true：是，false：否
+  private boolean truncated;// 是否被截断，true：是，false：否
+  private String inReplyToStatusId; // 回复ID
+  private String inReplyToUserId; // 回复人ID
   private String inReplyToScreenName; // 回复人昵称
   private String thumbnailPic; // 微博内容中的图片的缩略地址
   private String bmiddlePic; // 中型图片
   private String originalPic; // 原始图片
-  private Status retweetedStatus = null; // 转发的博文，内容为status，如果不是转发，则没有此字段
-  private String geo; // 地理信息，保存经纬度，没有时不返回此字段
-  private double latitude = -1; // 纬度
-  private double longitude = -1; // 经度
+  // TODO private Geo geo; // 地理信息字段
+  private User user = null; // 微博作者的用户信息字段
+  private Status retweetedStatus; // 被转发的原微博信息字段，当该微博为转发微博时返回
   private int repostsCount; // 转发数
   private int commentsCount; // 评论数
-  private String annotations; // 元数据，没有时不返回此字段
+  private int attitudesCount; // 表态数
   private int mlevel;
   private Visible visible;
 
-  public Status() {
-
-  }
+  public Status() {}
 
   public Status(Response res) throws WeiboException {
     super(res);
@@ -51,56 +48,39 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
   private void constructJson(JSONObject json) throws WeiboException {
     try {
+      this.json = json;
       createdAt = parseDate(json.getString("created_at"), "EEE MMM dd HH:mm:ss z yyyy");
-      id = json.getString("id");
+      id = json.getLong("id");
       mid = json.getString("mid");
-      idstr = json.getLong("idstr");
+      idstr = json.getString("idstr");
       text = json.getString("text");
-      if (!json.getString("source").isEmpty()) {
-        source = new Source(json.getString("source"));
-      }
-      inReplyToStatusId = getLong("in_reply_to_status_id", json);
-      inReplyToUserId = getLong("in_reply_to_user_id", json);
-      inReplyToScreenName = json.getString("in_reply_to_screen_name");
+      source = json.getString("source");
       favorited = getBoolean("favorited", json);
       truncated = getBoolean("truncated", json);
-      thumbnailPic = json.getString("thumbnail_pic");
-      bmiddlePic = json.getString("bmiddle_pic");
-      originalPic = json.getString("original_pic");
-      repostsCount = json.getInt("reposts_count");
-      commentsCount = json.getInt("comments_count");
-      // annotations = json.getString("annotations");
-      if (!json.isNull("user")) user = new User(json.getJSONObject("user"));
+      inReplyToStatusId = json.getString("in_reply_to_status_id");
+      inReplyToUserId = json.getString("in_reply_to_user_id");
+      inReplyToScreenName = json.getString("in_reply_to_screen_name");
+      thumbnailPic = json.optString("thumbnail_pic");
+      bmiddlePic = json.optString("bmiddle_pic");
+      originalPic = json.optString("original_pic");
+      // TODO GEO
+      if (!json.isNull("user")) {
+        user = new User(json.getJSONObject("user"));
+      }
       if (!json.isNull("retweeted_status")) {
         retweetedStatus = new Status(json.getJSONObject("retweeted_status"));
       }
+
+      repostsCount = json.getInt("reposts_count");
+      commentsCount = json.getInt("comments_count");
+      attitudesCount = json.getInt("attitudes_count");
       mlevel = json.getInt("mlevel");
-      geo = json.getString("geo");
-      if (geo != null && !"".equals(geo) && !"null".equals(geo)) {
-        getGeoInfo(geo);
-      }
       if (!json.isNull("visible")) {
         visible = new Visible(json.getJSONObject("visible"));
       }
     } catch (JSONException je) {
       throw new WeiboException(je.getMessage() + ":" + json.toString(), je);
     }
-  }
-
-  private void getGeoInfo(String geo) {
-    StringBuffer value = new StringBuffer();
-    for (char c : geo.toCharArray()) {
-      if (c > 45 && c < 58) {
-        value.append(c);
-      }
-      if (c == 44) {
-        if (value.length() > 0) {
-          latitude = Double.parseDouble(value.toString());
-          value.delete(0, value.length());
-        }
-      }
-    }
-    longitude = Double.parseDouble(value.toString());
   }
 
 
@@ -113,199 +93,6 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     super();
     JSONObject json = new JSONObject(str);
     constructJson(json);
-  }
-
-
-  public User getUser() {
-    return user;
-  }
-
-  public void setUser(User user) {
-    this.user = user;
-  }
-
-  public long getIdstr() {
-    return idstr;
-  }
-
-  public void setIdstr(long idstr) {
-    this.idstr = idstr;
-  }
-
-  public Date getCreatedAt() {
-    return createdAt;
-  }
-
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getText() {
-    return text;
-  }
-
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  public Source getSource() {
-    return source;
-  }
-
-  public void setSource(Source source) {
-    this.source = source;
-  }
-
-  public boolean isFavorited() {
-    return favorited;
-  }
-
-  public void setFavorited(boolean favorited) {
-    this.favorited = favorited;
-  }
-
-  public long getInReplyToStatusId() {
-    return inReplyToStatusId;
-  }
-
-  public void setInReplyToStatusId(long inReplyToStatusId) {
-    this.inReplyToStatusId = inReplyToStatusId;
-  }
-
-  public long getInReplyToUserId() {
-    return inReplyToUserId;
-  }
-
-  public void setInReplyToUserId(long inReplyToUserId) {
-    this.inReplyToUserId = inReplyToUserId;
-  }
-
-  public String getInReplyToScreenName() {
-    return inReplyToScreenName;
-  }
-
-  public void setInReplyToScreenName(String inReplyToScreenName) {
-    this.inReplyToScreenName = inReplyToScreenName;
-  }
-
-  public String getThumbnailPic() {
-    return thumbnailPic;
-  }
-
-  public void setThumbnailPic(String thumbnailPic) {
-    this.thumbnailPic = thumbnailPic;
-  }
-
-  public String getBmiddlePic() {
-    return bmiddlePic;
-  }
-
-  public void setBmiddlePic(String bmiddlePic) {
-    this.bmiddlePic = bmiddlePic;
-  }
-
-  public String getOriginalPic() {
-    return originalPic;
-  }
-
-  public void setOriginalPic(String originalPic) {
-    this.originalPic = originalPic;
-  }
-
-  public Status getRetweetedStatus() {
-    return retweetedStatus;
-  }
-
-  public void setRetweetedStatus(Status retweetedStatus) {
-    this.retweetedStatus = retweetedStatus;
-  }
-
-  public String getGeo() {
-    return geo;
-  }
-
-  public void setGeo(String geo) {
-    this.geo = geo;
-  }
-
-  public double getLatitude() {
-    return latitude;
-  }
-
-  public void setLatitude(double latitude) {
-    this.latitude = latitude;
-  }
-
-  public double getLongitude() {
-    return longitude;
-  }
-
-  public void setLongitude(double longitude) {
-    this.longitude = longitude;
-  }
-
-  public int getRepostsCount() {
-    return repostsCount;
-  }
-
-  public void setRepostsCount(int repostsCount) {
-    this.repostsCount = repostsCount;
-  }
-
-  public int getCommentsCount() {
-    return commentsCount;
-  }
-
-  public void setCommentsCount(int commentsCount) {
-    this.commentsCount = commentsCount;
-  }
-
-  public String getMid() {
-    return mid;
-  }
-
-  public void setMid(String mid) {
-    this.mid = mid;
-  }
-
-  public String getAnnotations() {
-    return annotations;
-  }
-
-  public void setAnnotations(String annotations) {
-    this.annotations = annotations;
-  }
-
-  public int getMlevel() {
-    return mlevel;
-  }
-
-  public void setMlevel(int mlevel) {
-    this.mlevel = mlevel;
-  }
-
-  public Visible getVisible() {
-    return visible;
-  }
-
-  public void setVisible(Visible visible) {
-    this.visible = visible;
-  }
-
-  public boolean isTruncated() {
-    return truncated;
-  }
-
-  public void setTruncated(boolean truncated) {
-    this.truncated = truncated;
   }
 
   public static StatusWapper constructWapperStatus(Response res) throws WeiboException {
@@ -355,15 +142,175 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
   @Override
   public String toString() {
-    return "Status [user=" + user + ", idstr=" + idstr + ", createdAt=" + createdAt + ", id=" + id
-        + ", text=" + text + ", source=" + source + ", favorited=" + favorited + ", truncated="
-        + truncated + ", inReplyToStatusId=" + inReplyToStatusId + ", inReplyToUserId="
-        + inReplyToUserId + ", inReplyToScreenName=" + inReplyToScreenName + ", thumbnailPic="
-        + thumbnailPic + ", bmiddlePic=" + bmiddlePic + ", originalPic=" + originalPic
-        + ", retweetedStatus=" + retweetedStatus + ", geo=" + geo + ", latitude=" + latitude
-        + ", longitude=" + longitude + ", repostsCount=" + repostsCount + ", commentsCount="
-        + commentsCount + ", mid=" + mid + ", annotations=" + annotations + ", mlevel=" + mlevel
-        + ", visible=" + visible + "]";
+    return json.toString();
+  }
+
+  public Date getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Date createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getMid() {
+    return mid;
+  }
+
+  public void setMid(String mid) {
+    this.mid = mid;
+  }
+
+  public String getIdstr() {
+    return idstr;
+  }
+
+  public void setIdstr(String idstr) {
+    this.idstr = idstr;
+  }
+
+  public String getText() {
+    return text;
+  }
+
+  public void setText(String text) {
+    this.text = text;
+  }
+
+  public String getSource() {
+    return source;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
+
+  public boolean isFavorited() {
+    return favorited;
+  }
+
+  public void setFavorited(boolean favorited) {
+    this.favorited = favorited;
+  }
+
+  public boolean isTruncated() {
+    return truncated;
+  }
+
+  public void setTruncated(boolean truncated) {
+    this.truncated = truncated;
+  }
+
+  public String getInReplyToStatusId() {
+    return inReplyToStatusId;
+  }
+
+  public void setInReplyToStatusId(String inReplyToStatusId) {
+    this.inReplyToStatusId = inReplyToStatusId;
+  }
+
+  public String getInReplyToUserId() {
+    return inReplyToUserId;
+  }
+
+  public void setInReplyToUserId(String inReplyToUserId) {
+    this.inReplyToUserId = inReplyToUserId;
+  }
+
+  public String getInReplyToScreenName() {
+    return inReplyToScreenName;
+  }
+
+  public void setInReplyToScreenName(String inReplyToScreenName) {
+    this.inReplyToScreenName = inReplyToScreenName;
+  }
+
+  public String getThumbnailPic() {
+    return thumbnailPic;
+  }
+
+  public void setThumbnailPic(String thumbnailPic) {
+    this.thumbnailPic = thumbnailPic;
+  }
+
+  public String getBmiddlePic() {
+    return bmiddlePic;
+  }
+
+  public void setBmiddlePic(String bmiddlePic) {
+    this.bmiddlePic = bmiddlePic;
+  }
+
+  public String getOriginalPic() {
+    return originalPic;
+  }
+
+  public void setOriginalPic(String originalPic) {
+    this.originalPic = originalPic;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
+  public Status getRetweetedStatus() {
+    return retweetedStatus;
+  }
+
+  public void setRetweetedStatus(Status retweetedStatus) {
+    this.retweetedStatus = retweetedStatus;
+  }
+
+  public int getRepostsCount() {
+    return repostsCount;
+  }
+
+  public void setRepostsCount(int repostsCount) {
+    this.repostsCount = repostsCount;
+  }
+
+  public int getCommentsCount() {
+    return commentsCount;
+  }
+
+  public void setCommentsCount(int commentsCount) {
+    this.commentsCount = commentsCount;
+  }
+
+  public int getAttitudesCount() {
+    return attitudesCount;
+  }
+
+  public void setAttitudesCount(int attitudesCount) {
+    this.attitudesCount = attitudesCount;
+  }
+
+  public int getMlevel() {
+    return mlevel;
+  }
+
+  public void setMlevel(int mlevel) {
+    this.mlevel = mlevel;
+  }
+
+  public Visible getVisible() {
+    return visible;
+  }
+
+  public void setVisible(Visible visible) {
+    this.visible = visible;
   }
 
 }
