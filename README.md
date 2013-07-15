@@ -12,3 +12,6 @@ Download the jar via maven:
     <version>2.1.1-beta2-2</version>
 </dependency>
 ```
+
+### 补充 ###
+本项目将持续更新，并修复Bug。欢迎加入项目。QQ交流群：328171904。
