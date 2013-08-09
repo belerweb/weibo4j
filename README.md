@@ -9,7 +9,7 @@ Download the jar via maven:
 <dependency>
     <groupId>com.belerweb</groupId>
     <artifactId>weibo4j-oauth2</artifactId>
-    <version>2.1.1-beta2-2</version>
+    <version>2.1.1-beta2-3</version>
 </dependency>
 ```
 
