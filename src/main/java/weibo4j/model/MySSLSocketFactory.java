@@ -18,7 +18,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 
 /**
  Provide a custom socket factory that implements org.apache.commons.httpclient.protocol.ProtocolSocketFactory interface. 
@@ -27,7 +27,7 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
  is performed automatically when the socket is created. 
  @author sinaWeibo
  */
-public class MySSLSocketFactory implements ProtocolSocketFactory {
+public class MySSLSocketFactory implements SecureProtocolSocketFactory {
   private SSLContext sslcontext = null;
 
   private SSLContext createSSLContext() {
