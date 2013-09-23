@@ -110,7 +110,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
       for (int i = 0; i < size; i++) {
         status.add(new Status(statuses.getJSONObject(i)));
       }
-      long previousCursor = jsonStatus.getLong("previous_curosr");
+      long previousCursor = jsonStatus.getLong("previous_cursor");
       long nextCursor = jsonStatus.getLong("next_cursor");
       long totalNumber = jsonStatus.getLong("total_number");
       String hasvisible = jsonStatus.getString("hasvisible");
