@@ -1,7 +1,8 @@
-weibo4j
+weibo4j（此项目停止，请移步新项目 https://github.com/belerweb/social-sdk ）
 =======
 
 A copy of http://code.google.com/p/weibo4j/, then deploy it to maven central repository.
+
 
 ### Download ###
 Download the jar via maven:
